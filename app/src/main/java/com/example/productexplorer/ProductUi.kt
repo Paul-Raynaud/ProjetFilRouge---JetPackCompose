@@ -1,6 +1,6 @@
 package com.example.productexplorer
 
-class ProductUi {
+class ProductUi (
     val title: String,
     val brand: String,
     val category: String,
@@ -11,7 +11,7 @@ class ProductUi {
     val stock: Int,
     val warrantyInformation: String,
     val shippingInformation: String,
-}
+)
 
 fun sampleProduct(): ProductUi {
     return ProductUi(
