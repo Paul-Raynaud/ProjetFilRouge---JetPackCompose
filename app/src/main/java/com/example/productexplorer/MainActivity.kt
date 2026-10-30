@@ -4,17 +4,23 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.productexplorer.ui.theme.ProductExplorerTheme
@@ -50,6 +56,12 @@ fun ProductDetailScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        ProductImage(
+            productTitle = product.title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        )
         ProductHeader(
             title = product.title,
             brand = product.brand,
@@ -61,6 +73,10 @@ fun ProductDetailScreen(
             modifier = Modifier
                 .fillMaxWidth() // <-- N'oublie pas d'importer fillMaxWidth
                 .padding(top = 16.dp)
+        )
+        ProductRating(
+            rating = product.rating,
+            modifier = Modifier.padding(top = 16.dp)
         )
         Text(text = product.description)
         Button(onClick = onAddToCartClick) {
@@ -102,5 +118,34 @@ fun ProductPriceCard(
                 style = MaterialTheme.typography.bodyMedium
             )
         }
+    }
+}
+
+@Composable
+fun ProductImage(
+    productTitle: String,
+    modifier: Modifier = Modifier
+) {
+    Image(
+        painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+        contentDescription = "Image du produit $productTitle",
+        modifier = modifier
+    )
+}
+
+@Composable
+fun ProductRating(
+    rating: Double,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier = modifier) {
+        Icon(
+            imageVector = Icons.Default.Star,
+            contentDescription = "Note du produit"
+        )
+        Text(
+            text = "$rating / 5",
+            modifier = Modifier.padding(start = 8.dp)
+        )
     }
 }
