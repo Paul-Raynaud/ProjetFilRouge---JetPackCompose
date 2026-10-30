@@ -5,10 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -18,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -57,8 +61,6 @@ fun ProductDetailScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        HomeHeader()
-
         ProductImage(
             productTitle = product.title,
             modifier = Modifier
@@ -279,6 +281,183 @@ fun ProductHomeScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Le contenu viendra ici à l'étape 2
+        HomeHeader()
+        Spacer(modifier = Modifier.height(24.dp)) // Espace !
+        SearchPreviewBar()
+        Spacer(modifier = Modifier.height(24.dp)) // Encore de l'espace !
+        FeaturedProductSection(
+            product = featuredProduct,
+            onClick = onFeaturedProductClick
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        CategoriesSection()
+        Spacer(modifier = Modifier.height(24.dp))
+        DailyOfferBox()
+    }
+}
+
+@Composable
+fun SearchPreviewBar(
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = 2.dp
+    ) {
+        Text(
+            text = "Rechercher un produit...",
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+@Composable
+fun FeaturedProductSection(
+    product: ProductUi,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        tonalElevation = 4.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "Produit mis en avant",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = product.title,
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Text(
+                text = product.brand,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            ProductQuickInfoRow(
+                price = product.price,
+                rating = product.rating,
+                stock = product.stock
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(onClick = onClick) {
+                Text(text = "Voir le produit")
+            }
+        }
+    }
+}
+
+@Composable
+fun ProductQuickInfoRow(
+    price: Double,
+    rating: Double,
+    stock: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = "$price €",
+            modifier = Modifier.weight(1f) // Prend 1/3 de l'espace
+        )
+        Text(
+            text = "★ $rating",
+            modifier = Modifier.weight(1f) // Prend 1/3 de l'espace
+        )
+        Text(
+            text = "$stock en stock",
+            modifier = Modifier.weight(1f) // Prend 1/3 de l'espace
+        )
+    }
+}
+@Composable
+fun CategoryChip(
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = 2.dp
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+@Composable
+fun CategoriesSection(
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = "Catégories",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Row {
+            CategoryChip(label = "Smartphones")
+            Spacer(modifier = Modifier.weight(1f))
+            CategoryChip(label = "Audio")
+            Spacer(modifier = Modifier.weight(1f))
+            CategoryChip(label = "Maison")
+        }
+    }
+}
+@Composable
+fun DailyOfferBox(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = 2.dp
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Offre du jour",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "Jusqu’à -20 % sur une sélection de produits",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+        Surface(
+            modifier = Modifier
+                .align(androidx.compose.ui.Alignment.TopEnd) // Le badge en haut à droite !
+                .padding(8.dp),
+            shape = MaterialTheme.shapes.small,
+            tonalElevation = 6.dp
+        ) {
+            Text(
+                text = "Nouveau",
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun ProductHomeScreenPreview() {
+    ProductExplorerTheme {
+        ProductHomeScreen(
+            featuredProduct = sampleProduct(),
+            onFeaturedProductClick = {},
+        )
     }
 }
