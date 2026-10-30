@@ -6,8 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -53,7 +55,13 @@ fun ProductDetailScreen(
             brand = product.brand,
             category = product.category
         )
-        Text(text = "${product.price} €")
+        ProductPriceCard(
+            price = product.price,
+            discountPercentage = product.discountPercentage,
+            modifier = Modifier
+                .fillMaxWidth() // <-- N'oublie pas d'importer fillMaxWidth
+                .padding(top = 16.dp)
+        )
         Text(text = product.description)
         Button(onClick = onAddToCartClick) {
             Text(text = "Ajouter au panier")
@@ -72,5 +80,27 @@ fun ProductHeader(
         Text(text = title, style = MaterialTheme.typography.headlineSmall)
         Text(text = brand, style = MaterialTheme.typography.titleMedium)
         Text(text = category, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+@Composable
+fun ProductPriceCard(
+    price: Double,
+    discountPercentage: Double,
+    modifier: Modifier = Modifier
+) {
+    Card(modifier = modifier) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "$price €",
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Text(
+                text = "Remise : $discountPercentage %",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
 }
