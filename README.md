@@ -9,18 +9,27 @@ L'objectif de cette application est de simuler une interface de type "catalogue 
 
 ## Fonctionnalités actuelles
 
-L'application est composée de deux écrans principaux :
+L'application est composée de trois écrans principaux :
 
-### 1. L'écran d'accueil (`ProductHomeScreen` - TP5)
-C'est le point d'entrée actuel de l'application. Il est construit en empilant différentes sections à l'aide de Layouts Compose (`Column`, `Row`, `Box`, `Spacer`, `Surface`).
+### 1. Le catalogue de produits (`ProductCatalogScreen` - TP6)
+C'est le point d'entrée actuel de l'application. Il affiche un catalogue complet en utilisant les listes performantes de Compose.
+- **En-tête du catalogue** : Un titre et une courte description.
+- **Catégories (Défilement horizontal)** : Utilisation de `LazyRow` pour afficher une liste de catégories (Smartphones, Audio, etc.) défilant de gauche à droite.
+- **Liste des produits (Défilement vertical)** : Utilisation de `LazyColumn` pour afficher de manière performante tous les produits disponibles (`sampleProducts()`).
+- **Cartes produits (`ProductListItem`)** : Chaque élément de la liste est affiché dans une carte réutilisable présentant le titre, la marque, le prix, la note et un bouton d'action.
+
+### 2. L'écran d'accueil (`ProductHomeScreen` - TP5)
+*(Actuellement visible via les `@Preview`)*
+Un écran d'accueil structuré avec différents Layouts (`Column`, `Row`, `Box`, `Spacer`, `Surface`).
 - **En-tête** : Titre et sous-titre de bienvenue.
 - **Barre de recherche** : Une fausse barre de recherche stylisée.
-- **Produit mis en avant** : Une carte détaillée mettant en vedette un produit (titre, marque, prix, note, stock).
-- **Catégories** : Une ligne horizontale de badges (chips) représentant les catégories (Smartphones, Audio, Maison).
+- **Produit mis en avant** : Une carte détaillée mettant en vedette un produit.
+- **Catégories** : Une ligne horizontale statique de badges.
 - **Offre du jour** : Une bannière promotionnelle avec un badge "Nouveau" superposé grâce au composant `Box`.
 
-### 2. L'écran de détail produit (`ProductDetailScreen` - TP4)
-Cet écran (actuellement visible via les `@Preview` ou en modifiant le point d'entrée dans `MainActivity`) affiche la fiche complète d'un produit. Il a été conçu pour manipuler les composants de base de Jetpack Compose.
+### 3. L'écran de détail produit (`ProductDetailScreen` - TP4)
+*(Actuellement visible via les `@Preview`)*
+Cet écran affiche la fiche complète d'un produit. Il a été conçu pour manipuler les composants de base de Jetpack Compose.
 - **Image** : Un espace réservé (placeholder) pour la photo du produit.
 - **En-tête** : Titre, marque et catégorie avec typographie `MaterialTheme`.
 - **Prix et Remise** : Mise en évidence dans une carte (`Card`).
@@ -33,10 +42,12 @@ Cet écran (actuellement visible via les `@Preview` ou en modifiant le point d'e
 ## Architecture et Code (Démarche d'apprentissage)
 
 - **UI Déclarative** : L'interface est entièrement codée en Kotlin en utilisant les fonctions `@Composable`.
-- **Composants réutilisables (Lego)** : Plutôt que d'avoir des fonctions géantes, l'interface est découpée en petits morceaux réutilisables (ex: `ProductHeader`, `ProductPriceCard`, `CategoryChip`). Chaque composant reçoit uniquement les données dont il a besoin, favorisant la lisibilité et la maintenance du code.
-- **Modèle de données** : Une `data class ProductUi` est utilisée pour transporter les informations du produit vers l'interface. Les fonctions `sampleProduct()` et `sampleProductOutOfStock()` fournissent des données fictives pour les tests et les prévisualisations.
-- **Material Design 3** : Le projet utilise les standards visuels d'Android (`MaterialTheme.typography`, `MaterialTheme.shapes`, `Surface`, etc.) et la librairie `material-icons-extended` pour les icônes de base.
+- **Listes performantes (Lazy Layouts)** : Utilisation de `LazyColumn` et `LazyRow` couplés à l'attribut `items` (et l'usage d'une clé `id` unique) pour générer dynamiquement le contenu de la liste sans surcharger la mémoire.
+- **Composants réutilisables (Lego)** : Plutôt que d'avoir des fonctions géantes, l'interface est découpée en petits morceaux réutilisables (ex: `ProductListItem`, `CategoryRow`). Chaque composant reçoit uniquement les données dont il a besoin.
+- **Modèle de données** : Une `data class ProductUi` est utilisée pour transporter les informations du produit vers l'interface. Un champ `id` a été ajouté pour optimiser le rendu des listes.
+- **Material Design 3** : Le projet utilise les standards visuels d'Android (`MaterialTheme.typography`, `Card`, `Surface`, etc.).
 
-
----
-*Ce fichier sera mis à jour au fur et à mesure de l'avancement du projet.*
+## Prochaines étapes prévues
+- Personnalisation de l'apparence avec le Material Design 3 (Thème, couleurs).
+- Ajout de la navigation réelle entre le catalogue et l'écran de détail.
+- Gestion de l'état (State) pour rendre l'application interactive.

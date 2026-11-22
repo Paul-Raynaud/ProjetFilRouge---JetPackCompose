@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
@@ -37,9 +39,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             ProductExplorerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ProductHomeScreen(
-                        featuredProduct = sampleProduct(),
-                        onFeaturedProductClick = {
+                    ProductCatalogScreen(
+                        products = sampleProducts(),
+                        onProductClick = {
                             // Plus tard : ouvrir le détail du produit
                         },
                         modifier = Modifier.padding(innerPadding)
@@ -458,6 +460,104 @@ fun ProductHomeScreenPreview() {
         ProductHomeScreen(
             featuredProduct = sampleProduct(),
             onFeaturedProductClick = {},
+        )
+    }
+}
+
+@Composable
+fun ProductCatalogScreen(
+    products: List<ProductUi>,
+    onProductClick: (ProductUi) -> Unit, // Le clic enverra le produit cliqué
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
+    ) {
+        // Un seul élément pour le titre
+        item {
+            Text(
+                text = "Catalogue produits",
+                style = MaterialTheme.typography.headlineMedium
+            )
+        }
+        item {
+            Text(
+                text = "Explorez une sélection de produits disponibles localement.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+        item {
+            CategoryRow(categories = sampleCategories())
+        }
+        items(
+            items = products,
+            key = { product -> product.id } // Utilisation de l'ID pour optimiser la liste
+        ) { product ->
+            ProductListItem(
+                product = product,
+                onClick = {
+                    onProductClick(product)
+                }
+            )
+        }
+
+    }
+}
+
+@Composable
+fun ProductListItem(
+    product: ProductUi,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(modifier = modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = product.title,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = product.brand,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "${product.price} € • ★ ${product.rating}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = onClick) {
+                Text(text = "Voir le produit")
+            }
+        }
+    }
+}
+@Composable
+fun CategoryRow(
+    categories: List<String>,
+    modifier: Modifier = Modifier
+) {
+    androidx.compose.foundation.lazy.LazyRow( // Assure-toi que LazyRow est importé
+        modifier = modifier,
+        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+    ) {
+        items(categories) { category ->
+            CategoryChip(label = category)
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProductCatalogScreenPreview() {
+    ProductExplorerTheme {
+        ProductCatalogScreen(
+            products = sampleProducts(),
+            onProductClick = {}
         )
     }
 }
