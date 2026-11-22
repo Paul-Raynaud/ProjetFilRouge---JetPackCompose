@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -384,9 +385,11 @@ fun CategoryChip(
 ) {
     Surface(
         modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        tonalElevation = 2.dp
+        shape = MaterialTheme.shapes.extraLarge, // On arrondit encore plus
+        color = MaterialTheme.colorScheme.secondary, // Fond secondaire
+        contentColor = MaterialTheme.colorScheme.onPrimary // Texte lisible par-dessus
     ) {
+        // Le Text reste inchangé à l'intérieur
         Text(
             text = label,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -471,7 +474,7 @@ fun ProductCatalogScreen(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
         verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
     ) {
@@ -479,7 +482,8 @@ fun ProductCatalogScreen(
         item {
             Text(
                 text = "Catalogue produits",
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary
             )
         }
         item {
@@ -512,22 +516,34 @@ fun ProductListItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(modifier = modifier.fillMaxWidth()) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        colors = androidx.compose.material3.CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = androidx.compose.material3.CardDefaults.cardElevation(
+            defaultElevation = 3.dp
+        )
+    ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
                 text = product.title,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = product.brand,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "${product.price} € • ★ ${product.rating}",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = onClick) {
@@ -551,10 +567,27 @@ fun CategoryRow(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    name = "Catalogue - Dark Theme"
+)
 @Composable
-fun ProductCatalogScreenPreview() {
-    ProductExplorerTheme {
+fun ProductCatalogScreenDarkPreview() {
+    ProductExplorerTheme(darkTheme = true) { // On force le Dark Theme
+        ProductCatalogScreen(
+            products = sampleProducts(),
+            onProductClick = {}
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    name = "Catalogue - Light Theme"
+)
+@Composable
+fun ProductCatalogScreenLightPreview() {
+    ProductExplorerTheme(darkTheme = false) { // On force le Light Theme
         ProductCatalogScreen(
             products = sampleProducts(),
             onProductClick = {}
