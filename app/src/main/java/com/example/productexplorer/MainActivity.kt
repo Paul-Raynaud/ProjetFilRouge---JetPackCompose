@@ -568,6 +568,25 @@ fun ProductCatalogScreen(
             )
         }
         item {
+            Button(
+                onClick = onToggleStockFilter
+            ) {
+                Text(
+                    text = if (showOnlyInStock) {
+                        "Afficher tous les produits"
+                    } else {
+                        "Afficher uniquement les produits en stock"
+                    }
+                )
+            }
+        }
+        item {
+            Text(
+                text = "${products.size} produit(s) affiché(s)",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+        item {
             Text(
                 text = "Catalogue produits",
                 style = MaterialTheme.typography.headlineMedium,
@@ -598,25 +617,7 @@ fun ProductCatalogScreen(
                 }
             )
         }
-        item {
-            Button(
-                onClick = onToggleStockFilter
-            ) {
-                Text(
-                    text = if (showOnlyInStock) {
-                        "Afficher tous les produits"
-                    } else {
-                        "Afficher uniquement les produits en stock"
-                    }
-                )
-            }
-        }
-        item {
-            Text(
-                text = "${products.size} produit(s) affiché(s)",
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
+
     }
 }
 
