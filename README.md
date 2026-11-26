@@ -11,14 +11,16 @@ L'objectif de cette application est de simuler une interface de type "catalogue 
 
 L'application est composée de trois écrans principaux :
 
-### 1. Le catalogue interactif de produits (`ProductCatalogScreen` - TP6, TP7 & TP8)
-C'est le point d’entrée principal de l'application. Il affiche la liste des produits avec une gestion d'état réactive (State Management).
-- **Barre de recherche interactive** : Filtrage en temps réel des produits par titre, marque ou catégorie grâce à `rememberSaveable` et `mutableStateOf`.
+### 1. Le catalogue interactif de produits (`ProductCatalogContainer` & `ProductCatalogScreen` - TP6, TP7, TP8 & TP9)
+C'est le point d’entrée principal de l'application. Il affiche la liste des produits avec une architecture propre basée sur le **State Hoisting** :
+- **Architecture Stateful / Stateless** :
+  - `ProductCatalogContainer` (Stateful) : Gère les états (`searchQuery`, `showOnlyInStock`, `favoriteProductIds`), effectue le filtrage dynamique (`filteredProducts`) et gère les actions (`toggleFavorite`).
+  - `ProductCatalogScreen` (Stateless) : Ne possède aucun état. Reçoit uniquement des données (`products`, `categories`, `searchQuery`, etc.) et transmet les événements via des callbacks (`onSearchQueryChange`, `onToggleStockFilter`, `onFavoriteClick`).
+- **Barre de recherche interactive** : Filtrage en temps réel des produits par titre, marque ou catégorie.
 - **Filtre par disponibilité** : Un bouton permet d'afficher uniquement les produits ayant un stock supérieur à zéro (`stock > 0`).
-- **Compteur dynamique** : Affichage automatique du nombre de produits correspondant aux critères de recherche et de filtrage.
-- **Gestion des favoris** : Chaque produit peut être ajouté ou retiré des favoris. L'état des favoris (`favoriteProductIds`) est conservé même en cas de rotation de l'écran grâce à `rememberSaveable`.
-- **Catégories (Défilement horizontal)** : `LazyRow` permettant de parcourir les catégories.
-- **Thème Material Design 3** : Prise en charge automatique des couleurs du mode Clair et du mode Sombre.
+- **Compteur dynamique** : Affichage automatique du nombre de produits correspondant aux critères.
+- **Gestion des favoris** : Conservation des favoris (`favoriteProductIds`) même lors de la récréation d'écran grâce à `rememberSaveable`.
+- **Thème Material Design 3** : Prise en charge automatique du mode Clair et du mode Sombre.
 
 ### 2. L'écran d'accueil (`ProductHomeScreen` - TP5)
 *(Actuellement visible via les `@Preview`)*
@@ -38,14 +40,14 @@ Cet écran affiche la fiche complète d'un produit.
 
 ## Architecture et Code (Démarche d'apprentissage)
 
+- **State Hoisting** : Séparation claire de la gestion de l'état et de l'affichage UI. Les données descendent (*Data down*), les événements remontent (*Events up*).
 - **UI Déclarative & State Management** :
-  - `mutableStateOf` : Permet à Compose d'observer les changements de variables (recherche, filtres, favoris) et de ré-exécuter l'affichage (recomposition).
-  - `remember` : Optimise les calculs coûteux (comme le filtrage de liste) pour ne les refaire que lorsque les dépendances changent.
-  - `rememberSaveable` : Sauvegarde l'état lors de la recréation de l'activité (ex: rotation de l'écran).
+  - `mutableStateOf` / `rememberSaveable` : Conservation et observabilité des états réactifs.
+  - `remember` : Optimisation des calculs complexes (filtrage).
 - **Material Design 3 (Personnalisation du Thème)** : Centralisation du design dans les fichiers `Theme.kt` (`LightColorScheme` / `DarkColorScheme`, `ProductShapes`, `ProductTypography`).
 - **Listes performantes (Lazy Layouts)** : `LazyColumn` et `LazyRow` optimisés avec des clés uniques (`key = { product -> product.id }`).
 
 ## Prochaines étapes prévues
-- Architecture avancée avec **State Hoisting** et **ViewModel**.
+- Intégration d'un **ViewModel** pour sortir l'état de l'arbre Compose et suivre les recommandations officielles d'Android.
 - Implémentation de la navigation réelle entre le catalogue, l'accueil et la fiche produit.
-- Intégration d'une vraie source de données distante (API REST).
+- Connexion à une source de données distante (API REST).
