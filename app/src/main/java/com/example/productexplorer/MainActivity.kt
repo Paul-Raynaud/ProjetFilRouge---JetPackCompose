@@ -32,6 +32,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.productexplorer.ui.theme.ProductExplorerTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -473,11 +475,26 @@ fun ProductCatalogScreen(
     onProductClick: (ProductUi) -> Unit, // Le clic enverra le produit cliqué
     modifier: Modifier = Modifier
 ) {
+    var searchQuery by androidx.compose.runtime.saveable.rememberSaveable {
+        androidx.compose.runtime.mutableStateOf("")
+    }
     LazyColumn(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
         verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
     ) {
+        item{
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { newValue ->
+                    searchQuery = newValue
+                },
+                label = {
+                    Text(text = "Rechercher un produit" )
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
         // Un seul élément pour le titre
         item {
             Text(
