@@ -484,6 +484,18 @@ fun ProductCatalogScreen(
         androidx.compose.runtime.mutableStateOf(false)
     }
 
+    var favoriteProductIds by androidx.compose.runtime.saveable.rememberSaveable {
+        androidx.compose.runtime.mutableStateOf(listOf<Int>()) // Une liste vide d'ID au départ
+    }
+
+    fun toggleFavorite(productId: Int) {
+        favoriteProductIds = if (favoriteProductIds.contains(productId)) {
+            favoriteProductIds - productId // S'il est déjà favori, on le retire
+        } else {
+            favoriteProductIds + productId // Sinon, on l'ajoute
+        }
+    }
+
     val filteredProducts = androidx.compose.runtime.remember(products, searchQuery, showOnlyInStock) {
         products.filter { product ->
             // Condition 1 : La recherche textuelle (titre, marque ou catégorie)
