@@ -478,6 +478,27 @@ fun ProductCatalogScreen(
     var searchQuery by androidx.compose.runtime.saveable.rememberSaveable {
         androidx.compose.runtime.mutableStateOf("")
     }
+
+    var showOnlyInStock by androidx.compose.runtime.saveable.rememberSaveable {
+        androidx.compose.runtime.mutableStateOf(false)
+    }
+
+    val filteredProducts = androidx.compose.runtime.remember(products, searchQuery, showOnlyInStock) {
+        products.filter { product ->
+            // Condition 1 : La recherche textuelle (titre, marque ou catégorie)
+            val matchesSearch =
+                product.title.contains(searchQuery, ignoreCase = true) ||
+                        product.brand.contains(searchQuery, ignoreCase = true) ||
+                        product.category.contains(searchQuery, ignoreCase = true)
+
+
+            val matchesStock = !showOnlyInStock || product.stock > 0
+
+            // Le produit est gardé uniquement si les DEUX conditions sont vraies
+            matchesSearch && matchesStock
+        }
+    }
+
     LazyColumn(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
@@ -513,7 +534,7 @@ fun ProductCatalogScreen(
             CategoryRow(categories = sampleCategories())
         }
         items(
-            items = products,
+            items = filteredProducts,
             key = { product -> product.id } // Utilisation de l'ID pour optimiser la liste
         ) { product ->
             ProductListItem(
