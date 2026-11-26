@@ -1,5 +1,6 @@
 package com.example.productexplorer
 
+import android.R
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -542,6 +543,27 @@ fun ProductCatalogScreen(
                 onClick = {
                     onProductClick(product)
                 }
+            )
+        }
+        item {
+            Button(
+                onClick = {
+                    showOnlyInStock = !showOnlyInStock
+                }
+            ) {
+                Text(
+                    text = if (showOnlyInStock){
+                        "Afficher tous les produits"
+                    } else {
+                        "Afficher uniquement les produits en stock"
+                    }
+                )
+            }
+        }
+        item {
+            Text(
+                text = "${filteredProducts.size} produit(s) affiché(s)",
+                style = MaterialTheme.typography.bodyMedium
             )
         }
 
