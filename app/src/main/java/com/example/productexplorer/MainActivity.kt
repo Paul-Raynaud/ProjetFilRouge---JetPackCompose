@@ -35,6 +35,9 @@ import androidx.compose.ui.unit.dp
 import com.example.productexplorer.ui.theme.ProductExplorerTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.mutableStateOf
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,8 +47,6 @@ class MainActivity : ComponentActivity() {
             ProductExplorerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ProductCatalogContainer(
-                        products = sampleProducts(),
-                        categories = sampleCategories(),
                         onProductClick = {
                             // Plus tard : ouvrir le détail du produit
                         },
@@ -53,6 +54,53 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+        }
+    }
+}
+
+class ProductCatalogViewModel : ViewModel() {
+
+    // 1. Les données sources locales
+    private val allProducts: List<ProductUi> = sampleProducts()
+    val categories: List<String> = sampleCategories()
+
+    // 2. Les états (lisibles publiquement, mais modifiables SEULEMENT ici grâce à private set)
+    var searchQuery by mutableStateOf("")
+        private set
+
+    var showOnlyInStock by mutableStateOf(false)
+        private set
+
+    var favoriteProductIds by mutableStateOf(listOf<Int>())
+        private set
+
+    // 3. La liste filtrée (recalculée à chaque fois que la recherche ou le filtre stock change)
+    val filteredProducts: List<ProductUi>
+        get() = allProducts.filter { product ->
+            val matchesSearch =
+                product.title.contains(searchQuery, ignoreCase = true) ||
+                        product.brand.contains(searchQuery, ignoreCase = true) ||
+                        product.category.contains(searchQuery, ignoreCase = true)
+
+            val matchesStock = !showOnlyInStock || product.stock > 0
+
+            matchesSearch && matchesStock
+        }
+
+    // 4. Les événements (fonctions appelées par l'interface lors d'un clic/saisie)
+    fun onSearchQueryChange(newValue: String) {
+        searchQuery = newValue
+    }
+
+    fun onToggleStockFilter() {
+        showOnlyInStock = !showOnlyInStock
+    }
+
+    fun onFavoriteClick(productId: Int) {
+        favoriteProductIds = if (favoriteProductIds.contains(productId)) {
+            favoriteProductIds - productId
+        } else {
+            favoriteProductIds + productId
         }
     }
 }
@@ -473,59 +521,19 @@ fun ProductHomeScreenPreview() {
 
 @Composable
 fun ProductCatalogContainer(
-    products: List<ProductUi>,
-    categories: List<String>,
     onProductClick: (ProductUi) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ProductCatalogViewModel = viewModel() // <-- On injecte le ViewModel
 ) {
-    var searchQuery by androidx.compose.runtime.saveable.rememberSaveable {
-        androidx.compose.runtime.mutableStateOf("")
-    }
-
-    var showOnlyInStock by androidx.compose.runtime.saveable.rememberSaveable {
-        androidx.compose.runtime.mutableStateOf(false)
-    }
-
-    var favoriteProductIds by androidx.compose.runtime.saveable.rememberSaveable {
-        androidx.compose.runtime.mutableStateOf(listOf<Int>())
-    }
-
-    val filteredProducts = androidx.compose.runtime.remember(products, searchQuery, showOnlyInStock) {
-        products.filter { product ->
-            val matchesSearch =
-                product.title.contains(searchQuery, ignoreCase = true) ||
-                        product.brand.contains(searchQuery, ignoreCase = true) ||
-                        product.category.contains(searchQuery, ignoreCase = true)
-
-            val matchesStock = !showOnlyInStock || product.stock > 0
-
-            matchesSearch && matchesStock
-        }
-    }
-
-    fun toggleFavorite(productId: Int) {
-        favoriteProductIds = if (favoriteProductIds.contains(productId)) {
-            favoriteProductIds - productId
-        } else {
-            favoriteProductIds + productId
-        }
-    }
-
     ProductCatalogScreen(
-        products = filteredProducts,
-        categories = categories,
-        searchQuery = searchQuery,
-        onSearchQueryChange = { newValue ->
-            searchQuery = newValue
-        },
-        showOnlyInStock = showOnlyInStock,
-        onToggleStockFilter = {
-            showOnlyInStock = !showOnlyInStock
-        },
-        favoriteProductIds = favoriteProductIds,
-        onFavoriteClick = { productId ->
-            toggleFavorite(productId)
-        },
+        products = viewModel.filteredProducts,
+        categories = viewModel.categories,
+        searchQuery = viewModel.searchQuery,
+        onSearchQueryChange = viewModel::onSearchQueryChange,
+        showOnlyInStock = viewModel.showOnlyInStock,
+        onToggleStockFilter = viewModel::onToggleStockFilter,
+        favoriteProductIds = viewModel.favoriteProductIds,
+        onFavoriteClick = viewModel::onFavoriteClick,
         onProductClick = onProductClick,
         modifier = modifier
     )
@@ -691,8 +699,6 @@ fun CategoryRow(
 fun ProductCatalogContainerDarkPreview() {
     ProductExplorerTheme(darkTheme = true) {
         ProductCatalogContainer(
-            products = sampleProducts(),
-            categories = sampleCategories(),
             onProductClick = {}
         )
     }
@@ -706,8 +712,6 @@ fun ProductCatalogContainerDarkPreview() {
 fun ProductCatalogContainerLightPreview() {
     ProductExplorerTheme(darkTheme = false) {
         ProductCatalogContainer(
-            products = sampleProducts(),
-            categories = sampleCategories(),
             onProductClick = {}
         )
     }

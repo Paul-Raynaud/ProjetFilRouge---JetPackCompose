@@ -1,53 +1,85 @@
 # Product Explorer
 
 ## Présentation du projet
-**Product Explorer** est une application Android moderne développée entièrement avec **Jetpack Compose**. 
+**Product Explorer** est une application Android moderne développée entièrement avec **Jetpack Compose** et **Material Design 3**. 
 
-L'objectif de cette application est de simuler une interface de type "catalogue e-commerce", permettant à l'utilisateur de découvrir des produits, de faire des recherches, de filtrer le catalogue et de consulter les détails d'un article spécifique. 
+Ce projet simule une interface de type "catalogue e-commerce", permettant à l'utilisateur de parcourir un catalogue, de rechercher des produits, de filtrer les articles disponibles et de gérer une liste de favoris.
 
-*Note : L'application est actuellement développée dans le cadre de Travaux Pratiques (TP) d'apprentissage. Les données sont pour l'instant locales (mockées).*
+---
 
-## Fonctionnalités actuelles
+## Chronologie des évolutions par TP
 
-L'application est composée de trois écrans principaux :
+### TP 4 – Écran de détail produit (Composants fondamentaux)
+- **Modèle de données** : Création de la classe de données `ProductUi` (titre, marque, catégorie, prix, remise, note, stock, garantie, livraison).
+- **Composants atomiques** : Découpage de l'interface en sous-composants réutilisables (`ProductHeader`, `ProductPriceCard`, `ProductImage`, `ProductRating`, `ProductAvailabilityCard`, `ProductDescription`, `ProductWarrantyField`, `AddToCartButton`).
+- **Assemblage** : Création de l'écran `ProductDetailScreen` et des prévisualisations `@Preview` (produit disponible et produit en rupture de stock).
 
-### 1. Le catalogue interactif de produits (`ProductCatalogContainer` & `ProductCatalogScreen` - TP6, TP7, TP8 & TP9)
-C'est le point d’entrée principal de l'application. Il affiche la liste des produits avec une architecture propre basée sur le **State Hoisting** :
-- **Architecture Stateful / Stateless** :
-  - `ProductCatalogContainer` (Stateful) : Gère les états (`searchQuery`, `showOnlyInStock`, `favoriteProductIds`), effectue le filtrage dynamique (`filteredProducts`) et gère les actions (`toggleFavorite`).
-  - `ProductCatalogScreen` (Stateless) : Ne possède aucun état. Reçoit uniquement des données (`products`, `categories`, `searchQuery`, etc.) et transmet les événements via des callbacks (`onSearchQueryChange`, `onToggleStockFilter`, `onFavoriteClick`).
-- **Barre de recherche interactive** : Filtrage en temps réel des produits par titre, marque ou catégorie.
-- **Filtre par disponibilité** : Un bouton permet d'afficher uniquement les produits ayant un stock supérieur à zéro (`stock > 0`).
-- **Compteur dynamique** : Affichage automatique du nombre de produits correspondant aux critères.
-- **Gestion des favoris** : Conservation des favoris (`favoriteProductIds`) même lors de la récréation d'écran grâce à `rememberSaveable`.
-- **Thème Material Design 3** : Prise en charge automatique du mode Clair et du mode Sombre.
+### TP 5 – Écran d'accueil Product Explorer (Layouts Compose)
+- **Exploration des Layouts** : Utilisation des composants de disposition fondamentaux (`Column`, `Row`, `Box`, `Spacer`, `Surface`).
+- **Composants d'accueil** : 
+  - `HomeHeader` : En-tête de bienvenue.
+  - `SearchPreviewBar` : Barre de recherche visuelle basée sur `Surface`.
+  - `FeaturedProductSection` : Carte mettant en avant un produit vedette.
+  - `ProductQuickInfoRow` : Alignement horizontal (prix, note, stock) via `Row` et `Modifier.weight`.
+  - `CategoriesSection` & `CategoryChip` : Badges de catégories.
+  - `DailyOfferBox` : Superposition d'un badge "Nouveau" en haut à droite d'une bannière via `Box` et `Alignment.TopEnd`.
 
-### 2. L'écran d'accueil (`ProductHomeScreen` - TP5)
-*(Actuellement visible via les `@Preview`)*
-Un écran d'accueil structuré avec différents Layouts (`Column`, `Row`, `Box`, `Spacer`, `Surface`).
-- **Barre de recherche** : Une fausse barre de recherche stylisée.
-- **Produit mis en avant** : Une carte détaillée mettant en vedette un produit.
-- **Catégories** : Une ligne horizontale de badges.
-- **Offre du jour** : Une bannière promotionnelle avec un badge "Nouveau" superposé grâce au composant `Box`.
+### TP 6 – Affichage d'un catalogue local (Listes modernes)
+- **Identifiants uniques** : Ajout d'une propriété `id: Int` dans `ProductUi` pour l'identification stable des éléments dans les listes.
+- **Source de données locale** : Création de `sampleProducts()` et `sampleCategories()`.
+- **Listes optimisées (Lazy Layouts)** :
+  - `LazyColumn` : Liste verticale pour afficher l'ensemble du catalogue de manière performante.
+  - `LazyRow` : Liste horizontale pour le défilement des catégories.
+  - `items(key = { product.id })` : Optimisation du rendu de la liste.
+- **Composant carte** : Création de `ProductListItem` pour afficher chaque élément du catalogue.
+- **Dépendance** : Intégration de `androidx.compose.material:material-icons-extended` pour l'icône d'étoile de notation.
 
-### 3. L'écran de détail produit (`ProductDetailScreen` - TP4)
-*(Actuellement visible via les `@Preview`)*
-Cet écran affiche la fiche complète d'un produit. 
-- **Image** : Un espace réservé (placeholder) pour la photo.
-- **Prix, Remise et Disponibilité** : Mise en évidence dans des cartes (`Card`).
-- **Garantie** : Information affichée dans un champ de texte en lecture seule (`OutlinedTextField`).
-- **Action** : Bouton d'ajout au panier.
+### TP 7 – Personnalisation graphique (Material Design 3 & Thème)
+- **Palettes de couleurs** : Définition des couleurs `LightColorScheme` et `DarkColorScheme` dans `Theme.kt` (`primary`, `surface`, `background`, `secondary`, `onSurface`, etc.).
+- **Formes & Typographie** :
+  - `ProductShapes` : Définition d'arrondis cohérents (`small`, `medium`, `large`, `extraLarge`).
+  - `ProductTypography` : Styles de textes personnalisés (`headlineMedium`, `titleLarge`, `titleMedium`, `bodyMedium`, `labelLarge`).
+- **Application au catalogue** : Utilisation de `MaterialTheme.colorScheme.background` et `surface` sur les cartes et le fond d'écran.
+- **Multi-Thème** : Prise en charge automatique et aperçus `@Preview` pour le **Mode Sombre** (*Dark Theme*) et le **Mode Clair** (*Light Theme*).
 
-## Architecture et Code (Démarche d'apprentissage)
+### TP 8 – Rendre le catalogue interactif (State Management)
+- **États réactifs** : Utilisation de `mutableStateOf` et `rememberSaveable` pour capturer les interactions utilisateur.
+- **Barre de recherche interactive** : Filtrage dynamique en temps réel via un `OutlinedTextField`.
+- **Filtre de disponibilité** : Bouton permettant de basculer l'affichage vers les produits en stock uniquement (`stock > 0`).
+- **Calcul réactif** : Utilisation de `remember(products, searchQuery, showOnlyInStock)` pour recalculer la liste filtrée sans bloquer l'UI.
+- **Compteur dynamique** : Affichage automatique du nombre de produits affichés.
+- **Système de favoris** : Gestion d'une liste d'identifiants favoris (`favoriteProductIds`) avec mise à jour instantanée du bouton ("Ajouter" / "Retirer").
 
-- **State Hoisting** : Séparation claire de la gestion de l'état et de l'affichage UI. Les données descendent (*Data down*), les événements remontent (*Events up*).
-- **UI Déclarative & State Management** :
-  - `mutableStateOf` / `rememberSaveable` : Conservation et observabilité des états réactifs.
-  - `remember` : Optimisation des calculs complexes (filtrage).
-- **Material Design 3 (Personnalisation du Thème)** : Centralisation du design dans les fichiers `Theme.kt` (`LightColorScheme` / `DarkColorScheme`, `ProductShapes`, `ProductTypography`).
-- **Listes performantes (Lazy Layouts)** : `LazyColumn` et `LazyRow` optimisés avec des clés uniques (`key = { product -> product.id }`).
+### TP 9 – Refactorer avec le State Hoisting (Stateful vs Stateless)
+- **Séparation des responsabilités** :
+  - **Composant Stateful (`ProductCatalogContainer`)** : Conserve et modifie les états (`searchQuery`, `showOnlyInStock`, `favoriteProductIds`), exécute le filtrage et la logique `toggleFavorite`.
+  - **Composant Stateless (`ProductCatalogScreen`)** : Ne possède aucun état. Reçoit uniquement des valeurs d'affichage et émet des événements vers le parent (*Data down, Events up*).
 
-## Prochaines étapes prévues
-- Intégration d'un **ViewModel** pour sortir l'état de l'arbre Compose et suivre les recommandations officielles d'Android.
-- Implémentation de la navigation réelle entre le catalogue, l'accueil et la fiche produit.
-- Connexion à une source de données distante (API REST).
+### TP 10 – Gestion d'écran avec ViewModel (Architecture Android)
+- **Dépendance** : Ajout de `androidx.lifecycle:lifecycle-viewmodel-compose`.
+- **Architecture ViewModel** :
+  - Création de `ProductCatalogViewModel` héritant de `ViewModel()`.
+  - Encapsulation des états avec `private set` (`searchQuery`, `showOnlyInStock`, `favoriteProductIds`).
+  - Calcul automatique de `filteredProducts` via un getter.
+  - Fonctions explicites pour la gestion des événements (`onSearchQueryChange`, `onToggleStockFilter`, `onFavoriteClick`).
+- **Injection** : Récupération du `ViewModel` dans `ProductCatalogContainer` via `viewModel()`.
+- **Survie aux configurations** : Conservation des filtres et favoris lors de la récréation d'écran (ex: rotation du téléphone).
+
+---
+
+## Résumé de l'architecture retenue
+
+```text
+MainActivity (Point d'entrée)
+  └── ProductCatalogContainer (Injecte le ViewModel)
+        └── ProductCatalogViewModel (Conserve l'état & gère la logique)
+        └── ProductCatalogScreen (Stateless - Dessine la LazyColumn)
+              ├── CategoryRow (LazyRow)
+              │     └── CategoryChip
+              └── ProductListItem (Card - Dessine un produit)
+```
+
+- **UI Déclarative** : Jetpack Compose (`@Composable`)
+- **Design System** : Material Design 3 (Thème clair / sombre, Typographies, Formes)
+- **Gestion de l'état** : Architecture officielle Android Unidirectionnelle (UDF) avec `ViewModel` et **State Hoisting**
+- **Listes performantes** : `LazyColumn` & `LazyRow` avec clés d'identification uniques.
